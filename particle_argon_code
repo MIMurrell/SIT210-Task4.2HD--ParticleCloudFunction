@@ -1,0 +1,64 @@
+/*
+ * Project: Task 4.2HD Particle - Calling a function from the Web to Device
+ * Description: The code for a system that allows three LEDs attached to a Particle Argon to be turned on & off individually from an HTML page. 
+ * Author:Matthew Murrell
+ * Date: 29/04/2022
+ */
+
+
+//The struct that represents each LED< including the pin attached to it and its current state.
+struct LED
+{
+    pin_t pin; //The pin of the LED
+    bool is_on = false; //Whether or not the LED is currently on. False by default
+};
+
+//Declaring the three LED lights
+LED RED_LED;
+LED BLUE_LED;
+LED GREEN_LED;
+
+SYSTEM_THREAD(ENABLED);
+
+// setup() runs once, when the device is first turned on.
+void setup() {
+    RED_LED.pin = D4;
+    BLUE_LED.pin = D5;
+    GREEN_LED.pin = D6;
+    pinMode(RED_LED.pin, OUTPUT); 
+    pinMode(BLUE_LED.pin, OUTPUT); 
+    pinMode(GREEN_LED.pin, OUTPUT); 
+    Particle.function("led", ledToggle);
+}
+
+//Toggles the passed LED on or off, depending on the current state of the is_on field of the struct
+void change_led(LED &led){
+    if (led.is_on){
+        led.is_on = false;
+        digitalWrite(led.pin, LOW); //Turns on the LED
+    }
+    else {
+        led.is_on = true;
+        digitalWrite(led.pin, HIGH); //Turns on the LED
+    }
+}
+
+// Passes the relevant LED struct to the change_led function based on the passed string
+int ledToggle(String colour){
+    if (colour.equals("red")){
+        change_led(RED_LED);
+    } else if (colour.equals("blue")){
+        change_led(BLUE_LED);
+    } else if (colour.equals("green")){
+        change_led(GREEN_LED);
+    }
+    
+    return 0;
+}
+
+
+
+// loop() runs over and over again, as quickly as it can execute.
+void loop() {
+
+}
